@@ -135,14 +135,24 @@ class Query
             $keys = $record->keys();
 
             foreach ($keys as $key) {
+                // if is null
+                $node = $record->get($key);
+                if(empty($node)){
+                    if (count($keys) === 1) {
+                        $row = $node;
+                    } else {
+                        $row[$key] = $node;
+                    }
+                    continue;
+                }
 
                 $mode = array_key_exists($key, $this->mappings) ? $this->mappings[$key][1] : self::HYDRATE_RAW;
 
                 if ($mode === self::HYDRATE_SINGLE) {
                     if (count($keys) === 1) {
-                        $row = $this->em->getEntityHydrator($this->mappings[$key][0])->hydrateNode($record->get($key));
+                        $row = $this->em->getEntityHydrator($this->mappings[$key][0])->hydrateNode($node);
                     } else {
-                        $row[$key] = $this->em->getEntityHydrator($this->mappings[$key][0])->hydrateNode($record->get($key));
+                        $row[$key] = $this->em->getEntityHydrator($this->mappings[$key][0])->hydrateNode($node);
                     }
                 } elseif ($mode === self::HYDRATE_COLLECTION) {
                     $coll = [];
@@ -152,11 +162,11 @@ class Query
                     }
                     $row[$key] = $coll;
                 } elseif ($mode === self::HYDRATE_MAP_COLLECTION) {
-                    $row[$key] = $this->hydrateMapCollection($record->get($key));
+                    $row[$key] = $this->hydrateMapCollection($node);
                 } elseif ($mode === self::HYDRATE_MAP) {
-                    $row[$key] = $this->hydrateMap($record->get($key));
+                    $row[$key] = $this->hydrateMap($node);
                 } elseif ($mode === self::HYDRATE_RAW) {
-                    $row[$key] = $record->get($key);
+                    $row[$key] = $node;
                 }
             }
 
