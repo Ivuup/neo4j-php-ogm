@@ -87,6 +87,16 @@ class EntityManager implements EntityManagerInterface
      */
     protected $entityPersisters = [];
 
+    /**
+     * EntityManager constructor.
+     *
+     * @param ClientInterface                          $databaseDriver
+     * @param null|string                              $cacheDirectory
+     * @param null|EventManager                        $eventManager
+     * @param null|GraphEntityMetadataFactoryInterface $metadataFactory
+     *
+     * @throws \Doctrine\Common\Annotations\AnnotationException
+     */
     public function __construct(
         ClientInterface $databaseDriver,
         $cacheDirectory = null,
@@ -106,11 +116,7 @@ class EntityManager implements EntityManagerInterface
     }
 
     /**
-     * @param string            $host
-     * @param string|null       $cacheDir
-     * @param EventManager|null $eventManager
-     *
-     * @return EntityManager
+     * {@inheritdoc}
      */
     public static function create($host, $cacheDir = null, EventManager $eventManager = null)
     {
@@ -194,11 +200,17 @@ class EntityManager implements EntityManagerInterface
         return $this->metadataFactory;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function initializeObject($obj)
     {
         $this->uow->initializeObject($obj);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function contains($entity)
     {
         return $this->uow->isScheduledForCreate($entity)
@@ -361,14 +373,16 @@ class EntityManager implements EntityManagerInterface
         return $this->entityHydrators[$className];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getEntityPersister($className)
     {
         return new BasicEntityPersister($className, $this->getClassMetadataFor($className), $this);
     }
 
     /**
-     * @param string $cql
-     * @return Query
+     * {@inheritdoc}
      */
     public function createQuery($cql = '')
     {
@@ -381,6 +395,9 @@ class EntityManager implements EntityManagerInterface
         return $query;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function registerPropertyConverter($name, $classname)
     {
         Converter::addConverter($name, $classname);

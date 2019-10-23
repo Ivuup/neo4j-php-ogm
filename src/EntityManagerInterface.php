@@ -13,9 +13,22 @@ namespace GraphAware\Neo4j\OGM;
 
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\ObjectManager;
+use GraphAware\Neo4j\OGM\Hydrator\EntityHydrator;
+use GraphAware\Neo4j\OGM\Metadata\NodeEntityMetadata;
+use GraphAware\Neo4j\OGM\Persisters\BasicEntityPersister;
+use GraphAware\Neo4j\OGM\Proxy\ProxyFactory;
 
 interface EntityManagerInterface extends ObjectManager
 {
+    /**
+     * @param string            $host
+     * @param null|string       $cacheDir
+     * @param null|EventManager $eventManager
+     *
+     * @return EntityManagerInterface
+     */
+    public static function create($host, $cacheDir = null, EventManager $eventManager = null);
+
     /**
      * @return EventManager
      */
@@ -60,4 +73,47 @@ interface EntityManagerInterface extends ObjectManager
      * @return \GraphAware\Neo4j\OGM\Repository\BaseRepository
      */
     public function getRepository($class);
+
+    /**
+     * @return string
+     */
+    public function getProxyDirectory();
+
+    /**
+     * @param NodeEntityMetadata $entityMetadata
+     *
+     * @return ProxyFactory
+     */
+    public function getProxyFactory(NodeEntityMetadata $entityMetadata);
+
+    /**
+     * @param string $className
+     *
+     * @return EntityHydrator
+     */
+    public function getEntityHydrator($className);
+
+    /**
+     * @param string $className
+     *
+     * @return BasicEntityPersister
+     */
+    public function getEntityPersister($className);
+
+    /**
+     * @param string $cql
+     *
+     * @return Query
+     */
+    public function createQuery($cql = '');
+
+    /**
+     * @param string $name
+     * @param string $classname
+     *
+     * @return void
+     */
+    public function registerPropertyConverter($name, $classname);
+
+    public function getAnnotationDriver();
 }

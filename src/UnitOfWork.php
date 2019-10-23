@@ -492,7 +492,8 @@ class UnitOfWork
         $classMetadata = $this->entityManager->getClassMetadataFor(get_class($entity));
         foreach ($classMetadata->getRelationshipEntities() as $relationshipMetadata) {
             $value = $relationshipMetadata->getValue($entity);
-            if (null === $value || ($relationshipMetadata->isCollection() && count($value) === 0)) {
+            $notInitialized = $value instanceof AbstractLazyCollection && !$value->isInitialized();
+            if (null === $value || ($relationshipMetadata->isCollection() && count($value) === 0) || $notInitialized) {
                 continue;
             }
             if ($relationshipMetadata->isCollection()) {
